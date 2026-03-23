@@ -8,12 +8,12 @@ import re
 from pathlib import Path
 from typing import Any
 
+from dotenv import load_dotenv
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from state import AgentState
 from tools import get_blast_radius
 
-from dotenv import load_dotenv
 load_dotenv()
 
 _ALLOWED_INTENTS = frozenset({"review", "impact", "qa", "code"})
@@ -93,9 +93,13 @@ def route_intent(state: AgentState) -> AgentState:
 
 
 def retrieve_context(state: AgentState) -> AgentState:
+    if state.get("use_git_changed_files"):
+        cf_arg: list[str] | None = None
+    else:
+        cf_arg = state["changed_files"]
     raw = get_blast_radius.invoke(
         {
-            "changed_files": state["changed_files"],
+            "changed_files": cf_arg,
             "repo_root": state.get("repo_root"),
             "max_depth": 2,
         }
@@ -135,15 +139,18 @@ Context (structural graph + source):
 Changed files: {changed_files}
 
 Review for: bugs, security issues, performance, style.
-Be specific — cite file:line."""
+Be specific — cite file:line.
+Trả lời bằng tiếng Việt."""
 
 IMPACT_PROMPT = """Analyze the blast radius of these changes.
 Graph data: {context}
-Identify: breaking changes, tests that must be updated, downstream risk."""
+Identify: breaking changes, tests that must be updated, downstream risk.
+Trả lời bằng tiếng Việt."""
 
 QA_PROMPT = """Answer this question about the codebase.
 Context: {context}
-Question: {query}"""
+Question: {query}
+Trả lời bằng tiếng Việt."""
 
 CODE_PROMPT = """You are a coding agent with full codebase context.
 Context: {context}

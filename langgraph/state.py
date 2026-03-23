@@ -16,6 +16,7 @@ class AgentState(TypedDict, total=False):
     file_contents: Required[dict[str, str]]
     messages: Required[Annotated[list, add_messages]]
     repo_root: NotRequired[str | None]
+    use_git_changed_files: NotRequired[bool]
     intent: NotRequired[str]
     blast_radius: NotRequired[dict]
     relevant_context: NotRequired[str]

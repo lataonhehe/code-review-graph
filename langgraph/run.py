@@ -52,15 +52,34 @@ def build_graph():
     return g.compile()
 
 
-def main() -> None:
+def invoke_agent(
+    query: str,
+    changed_files: list[str],
+    *,
+    file_contents: dict[str, str] | None = None,
+    repo_root: str | None = None,
+    use_git_changed_files: bool = False,
+    messages: list | None = None,
+) -> dict:
+    """Run the compiled graph once and return the final state dict."""
     app = build_graph()
-    result = app.invoke(
-        {
-            "query": "Review these changes for obvious issues.",
-            "changed_files": ["code_review_graph/graph.py"],
-            "file_contents": {},
-            "messages": [],
-        }
+    state: AgentState = {
+        "query": query,
+        "changed_files": changed_files,
+        "file_contents": file_contents or {},
+        "messages": messages or [],
+    }
+    if repo_root is not None:
+        state["repo_root"] = repo_root
+    if use_git_changed_files:
+        state["use_git_changed_files"] = True
+    return app.invoke(state)
+
+
+def main() -> None:
+    result = invoke_agent(
+        "Review these changes for obvious issues.",
+        ["code_review_graph/graph.py"],
     )
     print(result.get("final_answer", result))
 

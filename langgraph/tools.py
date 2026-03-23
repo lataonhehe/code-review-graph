@@ -43,11 +43,11 @@ def _blast_payload(raw: dict[str, Any]) -> dict[str, Any]:
 
 @tool
 def get_blast_radius(
-    changed_files: list[str],
+    changed_files: list[str] | None = None,
     repo_root: str | None = None,
     max_depth: int = 2,
 ) -> str:
-    """Blast radius: files and nodes affected by changes (uses SQLite code graph)."""
+    """Blast radius: files/nodes affected by changes. Pass None to auto-detect from git."""
     raw = get_impact_radius(
         changed_files=changed_files,
         max_depth=max_depth,
