@@ -10,7 +10,9 @@ from code_review_graph.parser import EdgeInfo, NodeInfo
 class TestGraphStore:
     def setup_method(self):
         self.tmp = tempfile.NamedTemporaryFile(suffix=".db", delete=False)
-        self.store = GraphStore(self.tmp.name)
+        db_path = self.tmp.name
+        self.tmp.close()
+        self.store = GraphStore(db_path)
 
     def teardown_method(self):
         self.store.close()

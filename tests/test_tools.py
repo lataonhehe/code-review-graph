@@ -13,7 +13,9 @@ from code_review_graph.tools import (
 class TestTools:
     def setup_method(self):
         self.tmp = tempfile.NamedTemporaryFile(suffix=".db", delete=False)
-        self.store = GraphStore(self.tmp.name)
+        db_path = self.tmp.name
+        self.tmp.close()
+        self.store = GraphStore(db_path)
         self._seed_data()
 
     def teardown_method(self):
@@ -173,7 +175,9 @@ class TestFindLargeFunctions:
 
     def setup_method(self):
         self.tmp = tempfile.NamedTemporaryFile(suffix=".db", delete=False)
-        self.store = GraphStore(self.tmp.name)
+        db_path = self.tmp.name
+        self.tmp.close()
+        self.store = GraphStore(db_path)
         # Create functions of various sizes
         self.store.upsert_node(NodeInfo(
             kind="File", name="/repo/big.py", file_path="/repo/big.py",
